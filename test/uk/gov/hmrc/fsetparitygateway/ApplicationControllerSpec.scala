@@ -6,20 +6,17 @@ import play.api.http.Status
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.play.test.WithFakeApplication
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import uk.gov.hmrc.play.test.{ UnitSpec, WithFakeApplication }
 
-
-class MicroserviceHelloWorldControllerSpec extends UnitSpec with WithFakeApplication{
+class ApplicationControllerSpec extends UnitSpec with WithFakeApplication {
 
   val fakeRequest = FakeRequest("GET", "/")
 
-
   "GET /" should {
     "return 200" in {
-      val result = MicroserviceHelloWorld.hello()(fakeRequest)
+      val result = ApplicationController.hello()(fakeRequest)
       status(result) shouldBe Status.OK
     }
   }
-
 
 }

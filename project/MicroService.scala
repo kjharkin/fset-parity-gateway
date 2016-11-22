@@ -1,3 +1,5 @@
+import com.typesafe.sbt.SbtScalariform.{ ScalariformKeys, _ }
+import com.typesafe.sbt.web.Import._
 import sbt.Keys._
 import sbt.Tests.{SubProcess, Group}
 import sbt._
@@ -13,16 +15,17 @@ trait MicroService {
   import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
   import uk.gov.hmrc.versioning.SbtGitVersioning
   import play.sbt.routes.RoutesKeys.routesGenerator
-
+  import scalariform.formatter.preferences._
 
   import TestPhases._
 
   val appName: String
 
   lazy val appDependencies : Seq[ModuleID] = ???
-  lazy val plugins : Seq[Plugins] = Seq.empty
+  lazy val plugins : Seq[Plugins] = Seq(SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin)
   lazy val playSettings : Seq[Setting[_]] = Seq.empty
 
+  lazy val compileScalastyle = taskKey[Unit]("compileScalastyle")
 
   lazy val microservice = Project(appName, file("."))
     .enablePlugins(Seq(play.sbt.PlayScala,SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin) ++ plugins : _*)
@@ -31,13 +34,24 @@ trait MicroService {
     .settings(publishingSettings: _*)
     .settings(defaultSettings(): _*)
     .settings(
+      scalaVersion := "2.11.8",
       libraryDependencies ++= appDependencies,
       retrieveManaged := true,
       evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
+      parallelExecution in Test := false,
+      fork in Test := false,
+      targetJvm := "jvm-1.8",
       routesGenerator := StaticRoutesGenerator
     )
     .configs(IntegrationTest)
     .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
+    .settings(scalariformSettings: _*)
+    .settings(ScalariformKeys.preferences := ScalariformKeys.preferences.value
+      .setPreference(FormatXml, false)
+      .setPreference(DoubleIndentClassDeclaration, false)
+      .setPreference(DanglingCloseParenthesis, Preserve))
+    .settings(compileScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
+      (compile in Compile) <<= (compile in Compile) dependsOn compileScalastyle)
     .settings(
       Keys.fork in IntegrationTest := false,
       unmanagedSourceDirectories in IntegrationTest <<= (baseDirectory in IntegrationTest)(base => Seq(base / "it")),
@@ -48,6 +62,7 @@ trait MicroService {
         Resolver.bintrayRepo("hmrc", "releases"),
         Resolver.jcenterRepo
       ))
+    .disablePlugins(sbt.plugins.JUnitXmlReportPlugin)
 }
 
 private object TestPhases {
