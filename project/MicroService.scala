@@ -43,6 +43,7 @@ trait MicroService {
       targetJvm := "jvm-1.8",
       routesGenerator := StaticRoutesGenerator
     )
+    .settings(sources in (Compile, doc) := Seq.empty)
     .configs(IntegrationTest)
     .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
     .settings(scalariformSettings: _*)
