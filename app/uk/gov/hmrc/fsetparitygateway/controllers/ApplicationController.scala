@@ -8,7 +8,15 @@ object ApplicationController extends ApplicationController
 
 trait ApplicationController extends BaseController {
 
-  def hello(): Action[AnyContent] = Action.async { implicit request =>
+  def create(): Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok("Hello world"))
+  }
+
+  def update(): Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok("Hello world"))
+  }
+
+  def helloWorld(): Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok("Hello world"))
   }
 }
