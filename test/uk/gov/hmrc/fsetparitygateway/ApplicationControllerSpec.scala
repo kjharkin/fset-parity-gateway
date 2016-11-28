@@ -14,7 +14,7 @@ class ApplicationControllerSpec extends UnitSpec with WithFakeApplication {
 
   "GET /" should {
     "return 200" in {
-      val result = ApplicationController.hello()(fakeRequest)
+      val result = ApplicationController.helloWorld()(fakeRequest)
       status(result) shouldBe Status.OK
     }
   }
