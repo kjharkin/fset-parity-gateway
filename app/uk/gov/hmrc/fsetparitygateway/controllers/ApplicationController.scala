@@ -14,8 +14,6 @@ class ApplicationController(parityClient: Client) extends BaseController {
 
   def create(): Action[AnyContent] = Action.async { implicit request =>
     request.body.asJson.map { jsonBody =>
-      Logger.debug("========= Json received " + jsonBody)
-
       parityClient.create(jsonBody).flatMap { _ =>
         Future.successful(Ok("Application sent"))
       }
