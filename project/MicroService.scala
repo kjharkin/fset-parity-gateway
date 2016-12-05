@@ -41,7 +41,9 @@ trait MicroService {
       parallelExecution in Test := false,
       fork in Test := false,
       targetJvm := "jvm-1.8",
-      routesGenerator := StaticRoutesGenerator
+      routesGenerator := StaticRoutesGenerator,
+      // Currently don't enable warning in value discard in tests until ScalaTest 3
+      scalacOptions in (Compile, compile) += "-Ywarn-value-discard"
     )
     .settings(sources in (Compile, doc) := Seq.empty)
     .configs(IntegrationTest)
