@@ -21,8 +21,11 @@ class ApplicationController(parityClient: Client) extends BaseController {
   }
 
   def update(): Action[AnyContent] = Action.async { implicit request =>
-    val jsonBody = request.body.asJson
-    Future.successful(Ok("Endpoint not in service"))
+    request.body.asJson.map { jsonBody =>
+      parityClient.update(jsonBody).flatMap { _ =>
+        Future.successful(Ok("Application update sent"))
+      }
+    }.getOrElse(Future.successful(BadRequest("Invalid Json in request body")))
   }
 
   def helloWorld(): Action[AnyContent] = Action.async { implicit request =>

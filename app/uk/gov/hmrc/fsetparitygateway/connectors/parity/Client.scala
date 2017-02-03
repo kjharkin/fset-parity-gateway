@@ -22,12 +22,20 @@ class Client(appConfig: ParityServiceApiConfig, wsHttp: WSHttp.type) {
   def create(jsonBody: JsValue): Future[CreateResponse] = {
     wsHttp.POST(s"$fullBasePath/candidate", jsonBody, Seq("Content-Type" -> "application/json")).map { response =>
       if (!List(200, 201).contains(response.status)) {
-        throw ParityConnectorException(s"Non-ok status code returned from parity -> ${response.status} with body: ${response.body}")
+        throw ParityConnectorException(s"Non-ok status code returned from parity on create -> ${response.status} with body: ${response.body}")
       } else {
         CreateResponse(response.status, response.body)
       }
     }
   }
 
-  def update(): UpdateResponse = ???
+  def update(jsonBody: JsValue): Future[UpdateResponse] = {
+    wsHttp.POST(s"$fullBasePath/sdip", jsonBody, Seq("Content-Type" -> "application/json")).map { response =>
+      if (!List(200, 201).contains(response.status)) {
+        throw ParityConnectorException(s"Non-ok status code returned from parity on update -> ${response.status} with body: ${response.body}")
+      } else {
+        UpdateResponse(response.status, response.body)
+      }
+    }
+  }
 }
